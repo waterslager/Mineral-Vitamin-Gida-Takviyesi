@@ -741,8 +741,11 @@
         .update({ data: remoteState, updated_at: new Date().toISOString() })
         .eq('id', STATE_ROW_ID);
       if (error) throw error;
+      return true;
     } catch (e) {
       console.warn('Supabase\u2019a kaydedilemedi, değişiklik sadece bu cihazda tutuluyor:', e);
+      alert('Supabase\u2019a kaydedilemedi! Hata: ' + (e && e.message ? e.message : JSON.stringify(e)));
+      return false;
     }
   }
 
@@ -752,7 +755,7 @@
   }
   function saveActiveDays(data) {
     remoteState.activeDays = data;
-    saveRemoteState();
+    return saveRemoteState();
   }
 
   /* ── Dosyaya gömülü ayarlar (baked-config) ──
@@ -997,7 +1000,7 @@
     products.forEach(p => {
       if (p.currentActive) all[p.id] = Array.from(p.currentActive).sort((a, b) => a - b);
     });
-    saveActiveDays(all);
+    return saveActiveDays(all);
   }
 
   /* ── Init ───────────────────────────────
@@ -1199,10 +1202,17 @@
     const globalSaveBtn = document.getElementById('global-save-btn');
     const globalSaveFeedback = document.getElementById('global-save-feedback');
     if (globalSaveBtn) {
-      globalSaveBtn.addEventListener('click', () => {
-        window.saveAllActiveDays();
-        globalSaveFeedback.classList.add('show');
-        setTimeout(() => globalSaveFeedback.classList.remove('show'), 2200);
+      globalSaveBtn.addEventListener('click', async () => {
+        const originalText = globalSaveBtn.textContent;
+        globalSaveBtn.disabled = true;
+        globalSaveBtn.textContent = 'Kaydediliyor…';
+        const ok = await window.saveAllActiveDays();
+        globalSaveBtn.disabled = false;
+        globalSaveBtn.textContent = originalText;
+        if (ok) {
+          globalSaveFeedback.classList.add('show');
+          setTimeout(() => globalSaveFeedback.classList.remove('show'), 2200);
+        }
       });
     }
   });
