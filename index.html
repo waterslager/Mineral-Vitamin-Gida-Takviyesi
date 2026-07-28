@@ -738,8 +738,7 @@
     try {
       const { error } = await supabaseClient
         .from('app_state')
-        .update({ data: remoteState, updated_at: new Date().toISOString() })
-        .eq('id', STATE_ROW_ID);
+        .upsert({ id: STATE_ROW_ID, data: remoteState, updated_at: new Date().toISOString() });
       if (error) throw error;
       return true;
     } catch (e) {
