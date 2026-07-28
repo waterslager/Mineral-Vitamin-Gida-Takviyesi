@@ -700,6 +700,18 @@
      son başarılı veriyi tarayıcıda önbellek olarak tutup onu
      kullanmaya devam ediyoruz. ─────────────────────────────────*/
   const SUPABASE_URL = 'https://ujakdosgbhnrqrorpasl.supabase.co';
+  /* ═══════════════════════════════════════════════════════════════
+     SUPABASE ANON KEY — BURAYI KENDİ ANAHTARINLA DEĞİŞTİR
+
+     Nasıl bulursun:
+     1. supabase.com'a git → projeni aç
+     2. Sol menüden "Project Settings" (dişli ikonu)
+     3. "API" sekmesine tıkla
+     4. "Project API keys" altındaki "anon public" anahtarı kopyala
+     5. Aşağıdaki tırnaklar arasına yapıştır
+
+     Anahtar şuna benzer: eyJhbGciOiJIUzI1NiIs...
+     ═══════════════════════════════════════════════════════════════ */
   const SUPABASE_ANON_KEY = 'sb_publishable_3z8jrULrY6mLipuMqdcaqg_Z3haNceK';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const STATE_ROW_ID = 'config';
@@ -741,11 +753,8 @@
         .update({ data: remoteState, updated_at: new Date().toISOString() })
         .eq('id', STATE_ROW_ID);
       if (error) throw error;
-      return true;
     } catch (e) {
       console.warn('Supabase\u2019a kaydedilemedi, değişiklik sadece bu cihazda tutuluyor:', e);
-      alert('Supabase\u2019a kaydedilemedi! Hata: ' + (e && e.message ? e.message : JSON.stringify(e)));
-      return false;
     }
   }
 
@@ -753,9 +762,10 @@
   function loadActiveDays() {
     return remoteState.activeDays || (remoteState.activeDays = {});
   }
-  function saveActiveDays(data) {
+  async function saveActiveDays(data) {
     remoteState.activeDays = data;
-    return saveRemoteState();
+    saveLocalCache(remoteState);
+    try { await saveRemoteState(); } catch(e) { /* local'a kaydettik */ }
   }
 
   /* ── Dosyaya gömülü ayarlar (baked-config) ──
@@ -778,12 +788,13 @@
   function loadEverydayChoice() {
     return remoteState.everydayChoice || (remoteState.everydayChoice = {});
   }
-  function saveEverydayChoice(data) {
+  async function saveEverydayChoice(data) {
     remoteState.everydayChoice = data;
-    saveRemoteState();
+    saveLocalCache(remoteState);
+    try { await saveRemoteState(); } catch(e) { /* local'a kaydettik */ }
   }
 
-  function resolveEverydayChoices() {
+  async function resolveEverydayChoices() {
     const choice = loadEverydayChoice();
     const bakedChoice = (bakedConfig && bakedConfig.everydayChoice) || {};
     const groups = {};
@@ -801,7 +812,7 @@
         choice[g] = def.id;
       }
     });
-    saveEverydayChoice(choice);
+    await saveEverydayChoice(choice);
     products.forEach(p => {
       if (p.everydayGroup) p.everyDay = (choice[p.everydayGroup] === p.id);
     });
@@ -818,13 +829,13 @@
 
   function initEverydaySelectors() {
     document.querySelectorAll('.everyday-select-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         const group = btn.dataset.group;
         const pid = btn.dataset.productId;
         const choice = loadEverydayChoice();
         if (choice[group] === pid) return; // zaten seçili
         choice[group] = pid;
-        saveEverydayChoice(choice);
+        await saveEverydayChoice(choice);
         products.forEach(p => {
           if (p.everydayGroup === group) p.everyDay = (p.id === pid);
         });
@@ -995,12 +1006,21 @@
      en altındaki tek buton, o an ekrandaki TÜM ürünlerin
      currentActive setlerini toplayıp tek bir Supabase yazma
      işlemiyle kaydediyor. ───────────────────────────────*/
-  function saveAllActiveDays() {
+  async function saveAllActiveDays() {
     const all = loadActiveDays();
     products.forEach(p => {
       if (p.currentActive) all[p.id] = Array.from(p.currentActive).sort((a, b) => a - b);
     });
-    return saveActiveDays(all);
+    remoteState.activeDays = all;
+    // Önce localStorage'a kaydet (her zaman çalışır)
+    saveLocalCache(remoteState);
+    // Sonra Supabase'e dene
+    try {
+      await saveRemoteState();
+      return { success: true, source: 'cloud' };
+    } catch (e) {
+      return { success: true, source: 'local' };
+    }
   }
 
   /* ── Init ───────────────────────────────
@@ -1012,9 +1032,9 @@
   window.downloadUpdatedFile = downloadUpdatedFile;
   window.renderSummary = renderSummary;
   window.saveAllActiveDays = saveAllActiveDays;
-  window.appReady = loadRemoteState().then(() => {
+  window.appReady = loadRemoteState().then(async () => {
     const allActiveDays = loadActiveDays();
-    const everydayChoice = resolveEverydayChoices();
+    const everydayChoice = await resolveEverydayChoices();
     products.forEach(p => buildGrid(p, allActiveDays));
     initEverydaySelectors();
     applyEverydayButtonStates(everydayChoice);
@@ -1203,15 +1223,25 @@
     const globalSaveFeedback = document.getElementById('global-save-feedback');
     if (globalSaveBtn) {
       globalSaveBtn.addEventListener('click', async () => {
-        const originalText = globalSaveBtn.textContent;
         globalSaveBtn.disabled = true;
-        globalSaveBtn.textContent = 'Kaydediliyor…';
-        const ok = await window.saveAllActiveDays();
-        globalSaveBtn.disabled = false;
-        globalSaveBtn.textContent = originalText;
-        if (ok) {
+        globalSaveBtn.textContent = 'Kaydediliyor...';
+        try {
+          const result = await window.saveAllActiveDays();
+          globalSaveFeedback.textContent = result.source === 'cloud' ? '✓ Kaydedildi (Bulut)' : '✓ Kaydedildi (Yerel)';
+          globalSaveFeedback.style.color = '#4ade80';
           globalSaveFeedback.classList.add('show');
           setTimeout(() => globalSaveFeedback.classList.remove('show'), 2200);
+        } catch (e) {
+          globalSaveFeedback.textContent = '✗ Kaydedilemedi';
+          globalSaveFeedback.style.color = '#ef4444';
+          globalSaveFeedback.classList.add('show');
+          setTimeout(() => {
+            globalSaveFeedback.classList.remove('show');
+            globalSaveFeedback.style.color = '';
+          }, 2200);
+        } finally {
+          globalSaveBtn.disabled = false;
+          globalSaveBtn.textContent = 'Kaydet';
         }
       });
     }
