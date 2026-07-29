@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="tr"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mineral Vitamin Gıda Takviyesi</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#131a33">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Takviye Takip">
+  <link rel="icon" href="./192.png" type="image/png">
+  <link rel="apple-touch-icon" href="./192.png">
+  <style>
+    :root {
+      --accent: #42a5f5;
+      --white:  #ffffff;
+      --muted:  #9aa3c4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background:
+        radial-gradient(1200px 800px at 80% -10%, #2d3f7a 0%, transparent 60%),
+        radial-gradient(800px 600px at -10% 110%, #3a2d6a 0%, transparent 60%),
+        linear-gradient(180deg, #131a33 0%, #1a2547 60%, #131a33 100%);
+      color: var(--white);
+      font-family: 'Times New Roman', 'Times', Georgia, serif;
+      min-height: 100vh;
+      padding: 24px 16px 60px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-top: 8px;
+    }
+    header .site-title {
+      font-size: clamp(1.1rem, 3.5vw, 1.6rem);
+      font-weight: 800;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-shadow: none;
+    }
+    header .subtitle {
+      font-size: .75rem;
+      letter-spacing: .15em;
+      color: var(--muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+    .download-file-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: .62rem;
+      font-family: inherit;
+      letter-spacing: .02em;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 0;
+    }
+    .download-file-btn:hover {
+      color: #cfd6ea;
+    }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    /* ── MAGNEZYUM WRAPPER ── */
+    .mag-section {
+      max-width: 1100px;
+      margin: 0 auto 48px;
+    }
+    .mag-section-title {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--white);
+      border-left: 3px solid var(--accent);
+      padding-left: 12px;
+      margin-bottom: 20px;
+    }
+
+    /* ── PRODUCT CARD ── */
+    .product-card {
+      background: #000000;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 20px 20px 0;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .product-name {
+      font-size: clamp(.9rem, 2vw, 1.1rem);
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: .04em;
+      min-height: 2.6em;
+      display: flex;
+      align-items: center;
+    }
+
+    .compound-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-top: 8px;
+    }
+    .compound-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .compound-pill {
+      background: #0d1526;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: .67rem;
+      color: var(--muted);
+    }
+    .compound-pill span {
+      color: #64b5f6;
+      font-weight: 600;
+    }
+    .compound-pill.elemental {
+      border-color: #EF4444;
+      color: #EF4444;
+    }
+    .compound-pill.elemental span { color: #EF4444; }
+
+    /* ── "HER GÜN ÜRÜNÜ" SEÇİM BUTONU ── */
+    .everyday-select-btn {
+      display: inline-block;
+      margin-top: 10px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--muted);
+      font-size: .62rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: border-color .2s, color .2s, background .2s;
+    }
+    .everyday-select-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .everyday-select-btn.active {
+      background: #42a5f522;
+      border-color: var(--accent);
+      color: var(--accent);
+      cursor: default;
+    }
+
+    /* ── WEEKLY GRID ── */
+    .week-grid-wrapper {
+      overflow-x: auto;
+      margin: 0 -20px;
+      padding: 0 20px 16px;
+    }
+    .week-grid {
+      display: grid;
+      gap: 0;
+      min-width: 0;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #121830;
+    }
+    /* columns = label + 7 days — label narrow, days equal & snug */
+    .week-grid.has-two-meals {
+      grid-template-columns: 52px repeat(7, minmax(0, 1fr));
+    }
+
+    /* day header row — clickable to toggle active/inactive */
+    .day-header {
+      text-align: center;
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 5px 2px;
+      color: var(--muted);
+      background: #0d1220;
+      border-left: 1px solid rgba(255,255,255,0.08);
+      cursor: pointer;
+      user-select: none;
+      transition: color .15s, background .15s;
+    }
+    .day-header:hover {
+      background: #131c33;
+    }
+    .day-header:first-of-type { border-left: none; }
+    .day-header.active-day {
+      color: #64b5f6;
+    }
+    /* empty top-left corner */
+    .corner {
+      background: #0d1220;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .8rem;
+    }
+
+    /* ── GENEL "KAYDET" BUTONU (footer) ── */
+    .global-save-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .global-save-btn {
+      background: #1a2547;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #cfe0ff;
+      font-family: 'Times New Roman', 'Times', Georgia, serif;
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: 6px 18px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+    }
+    .global-save-btn:hover { background: #22305c; }
+    .global-save-btn:active { transform: scale(.97); }
+    .global-save-feedback {
+      font-size: .68rem;
+      font-weight: 600;
+      font-family: 'Times New Roman', 'Times', Georgia, serif;
+      color: #4ade80;
+      opacity: 0;
+      transition: opacity .4s;
+    }
+    .global-save-feedback.show { opacity: 1; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: .65rem;
+      letter-spacing: .1em;
+      margin-top: 20px;
+    }
+
+    /* ── Mini gün satırı (tek satır, ikon + 7 gün yan yana) ── */
+    .mini-day-strip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 4px;
+      flex-wrap: nowrap;
+    }
+    .mini-day-strip .mini-icon {
+      font-size: .85rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .mini-day-strip .mini-day {
+      font-size: .5rem;
+      font-weight: 700;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      padding: 2px 5px;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.04);
+      color: #4a5570;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: all .25s ease;
+      cursor: default;
+      flex-shrink: 0;
+    }
+    .mini-day-strip .mini-day.active {
+      background: rgba(66, 165, 245, 0.15);
+      color: #64b5f6;
+      border-color: rgba(66, 165, 245, 0.3);
+    }
+    .hergun-badge {
+      font-size: .55rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 8px;
+      margin-left: 4px;
+      white-space: nowrap;
+      transition: all .3s ease;
+      flex-shrink: 0;
+    }
+    .hergun-badge.active {
+      color: #4ade80;
+      background: rgba(74, 222, 128, 0.1);
+      border: 1px solid rgba(74, 222, 128, 0.2);
+      text-shadow: 0 0 8px rgba(74, 222, 128, 0.2);
+    }
+    .hergun-badge.inactive {
+      color: #4a5570;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="site-title">Mineral &amp; Vitamin Gıda Takviyesi</div>
+  <div class="subtitle">Haftalık Takviye Takip Tablosu</div>
+</header>
+<div class="mag-section">
+  <div class="section-label">Mineral</div>
+  <div class="mag-section-title">Magnezyum</div>
+
+  <!-- ────────────────────────────────────────
+       ÜRÜN 1 — PureMag Plus
+  ──────────────────────────────────────── -->
+  <div class="product-card" id="card-puremag">
+    <div class="card-header">
+      <div>
+        <div class="product-name">PureMag Plus</div>
+        <div class="compound-list">
+          <div class="compound-row">
+            <div class="compound-pill elemental">Elemental <span>250 mg</span></div>
+          </div>
+          <div class="compound-row">
+            <div class="compound-pill">Sitrat <span>90 mg</span></div>
+            <div class="compound-pill">Bisglisinat <span>75 mg</span></div>
+            <div class="compound-pill">Malat <span>60 mg</span></div>
+            <div class="compound-pill">Taurat <span>25 mg</span></div>
+            <div class="compound-pill">Aktif B6 (P-5-P) <span>10 mg</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-grid-wrapper">
+      <div class="week-grid has-two-meals" id="grid-puremag"><div class="corner">☀️🌤️</div></div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       ÜRÜN 2 — Longify 5-in-1
+  ──────────────────────────────────────── -->
+  <div class="product-card" id="card-longify">
+    <div class="card-header">
+      <div>
+        <div class="product-name">Longify 5-In-1 Magnesium</div>
+        <div class="compound-list">
+          <div class="compound-row">
+            <div class="compound-pill elemental">Elemental <span>125 mg</span></div>
+          </div>
+          <div class="compound-row">
+            <div class="compound-pill">Sitrat <span>25 mg</span></div>
+            <div class="compound-pill">Bisglisinat <span>25 mg</span></div>
+            <div class="compound-pill">Malat <span>25 mg</span></div>
+            <div class="compound-pill">Taurat <span>25 mg</span></div>
+            <div class="compound-pill">L-Treonat <span>25 mg</span></div>
+            <div class="compound-pill">Taurin <span>75 mg</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-grid-wrapper">
+      <div class="week-grid has-two-meals" id="grid-longify"><div class="corner">☀️</div></div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       ÜRÜN — Mag-ThreeOn Vitasso İlaç
+  ──────────────────────────────────────── -->
+  <div class="product-card" id="card-magthreeon">
+    <div class="card-header">
+      <div>
+        <div class="product-name">Mag-ThreeOn Vitasso İlaç</div>
+        <div class="compound-list">
+          <div class="compound-row">
+            <div class="compound-pill elemental">Elemental <span>144 mg</span></div>
+          </div>
+          <div class="compound-row">
+            <div class="compound-pill">L-Treonat <span>75 mg</span></div>
+            <div class="compound-pill">Bisglisinat <span>45 mg</span></div>
+            <div class="compound-pill">Taurat <span>24 mg</span></div>
+          </div>
+          <div class="compound-row">
+            <div class="compound-pill">B6 (Aktif) <span>7,5 mg</span></div>
+            <div class="compound-pill">B12 Metilkobalamin <span>95,27 mcg</span></div>
+            <div class="compound-pill">B12 Adenozilkobalamin <span>47,635 mcg</span></div>
+          </div>
+          <div class="compound-row">
+            <div class="compound-pill">C (Ester Form) <span>30 mg</span></div>
+            <div class="compound-pill">D3 <span>500 IU</span></div>
+            <div class="compound-pill">K2 <span>40 mcg</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-grid-wrapper">
+      <div class="week-grid has-two-meals" id="grid-magthreeon"><div class="corner">☀️</div></div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       ÜRÜN 3 — Magnimore Plus
+  ──────────────────────────────────────── -->
+  <div class="product-card" id="card-magnimore">
+    <div class="card-header">
+      <div>
+        <div class="product-name">Magnimore Plus</div>
+        <div class="compound-list">
+          <div class="compound-pill elemental">Elemental <span>105 mg</span></div>
+          <div class="compound-pill">ATA Mg (N-Asetil Taurinat) <span>35 mg</span></div>
+          <div class="compound-pill">Bisglisinat <span>35 mg</span></div>
+          <div class="compound-pill">Malat <span>35 mg</span></div>
+        </div>
+        <button class="everyday-select-btn" data-group="magnezyum-sabit" data-product-id="magnimore">Her Gün Ürünü Yap</button>
+      </div>
+    </div>
+
+    <div class="week-grid-wrapper">
+      <div class="week-grid has-two-meals" id="grid-magnimore"><div class="corner">☀️</div></div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       ÜRÜN 4 — Chelatex Magnezyum Bisglisinat Şelat
+  ──────────────────────────────────────── -->
+  <div class="product-card" id="card-chelatex-magnezyum">
+    <div class="card-header">
+      <div>
+        <div class="product-name">Chelatex Magnezyum Bisglisinat Şelat</div>
+        <div class="compound-list">
+          <div class="compound-row">
+            <div class="compound-pill elemental">Elemental <span>100 mg</span></div>
+          </div>
+          <div class="compound-row">
+            <div class="compound-pill">Bisglisinat Şelat <span>100 mg</span></div>
+            <div class="compound-pill">Vitamin B6 (Piridoksal 5ʼ-Fosfattan) <span>5 mg</span></div>
+          </div>
+        </div>
+        <button class="everyday-select-btn active" data-group="magnezyum-sabit" data-product-id="chelatex-magnezyum">✓ Her Gün Ürünü</button>
+      </div>
+    </div>
+
+    <div class="week-grid-wrapper">
+      <div class="week-grid has-two-meals" id="grid-chelatex-magnezyum"><div class="corner">🌙</div></div>
+    </div>
+  </div>
+
+</div><!-- /mag-section -->
+<div class="mag-section">
+  <div class="section-label">Yağ Asidi</div>
+  <div class="mag-section-title">Omega 3 &amp; Krill Yağı</div>
+
+  <!-- ────────────────────────────────────────
+       ÜRÜN 1 — OmePa D3K2
+  ──────────────────────────────────────── -->
+  <div class="product-card" id="card-omepa">
+    <div class="card-header">
+      <div>
+        <div class="product-name">OmePa D3K2 Omega 3</div>
+        <div class="compound-list">
+          <div class="compound-row">
+            <div class="compound-pill">Balık Yağı <span>969 mg</span></div>
+            <div class="compound-pill">Omega 3 <span>640 mg</span></div>
+          </div>
+          <div class="compound-row">
+            <div class="compound-pill elemental">EPA <span>340 mg</span></div>
+            <div class="compound-pill elemental">DHA <span>235 mg</span></div>
+            <div class="compound-pill">K2 (MK-7) <span>100 μg</span></div>
+            <div class="compound-pill">D3 <span>2,5 μg (500 IU)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="week-grid-wrapper">
+      <div class="week-grid has-two-meals" id="grid-omepa"><div class="corner">🌤️</div></div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       ÜRÜN 2 — Longify Omega 3
+  ──────────────────────────────────────── -->
+  <div class="product-card" id="card-longify-omega">
+    <div class="card-header">
+      <div>
+        <div class="product-name">Longify Omega 3 + D3K2 (MK7)</div>
+        <div class="compound-list">
+          <div class="compound-row">
+            <div class="compound-pill">Balık Yağı <span>1200 mg</span></div>
+            <div class="compound-pill">Omega 3 <span>960 mg</span></div>
+          </div>
+          <div class="compound-row">
+            <div class="compound-pill elemental">EPA <span>480 mg</span></div>
+            <div class="compound-pill elemental">DHA <span>360 mg</span></div>
+            <div class="compound-pill">E <span>2,5 mcg</span></div>
+            <div class="compound-pill">K2 (MK-7) <span>12,5 μg</span></div>
+            <div class="compound-pill">D3 <span>12,5 μg (500 IU)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="week-grid-wrapper">
+      <div class="week-grid has-two-meals" id="grid-longify-omega"><div class="corner">🌤️</div></div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       ÜRÜN 3 — Supra Protein Epax
+  ──────────────────────────────────────── -->
+  <div class="product-card" id="card-supra">
+    <div class="card-header">
+      <div>
+        <div class="product-name">Supra Protein Epax® Omega-3 Trigliserid</div>
+        <div class="compound-list">
+          <div class="compound-row">
+            <div class="compound-pill">Balık Yağı <span>1000 mg</span></div>
+            <div class="compound-pill">Omega 3 <span>700 mg</span></div>
+          </div>
+          <div class="compound-row">
+            <div class="compound-pill elemental">EPA <span>360 mg</span></div>
+            <div class="compound-pill elemental">DHA <span>260 mg</span></div>
+            <div class="compound-pill">K2 (MK-7) <span>50 μg</span></div>
+            <div class="compound-pill">D3 <span>12,5 μg (500 IU)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="week-grid-wrapper">
+      <div class="week-grid has-two-meals" id="grid-supra"><div class="corner">🌤️</div></div>
+    </div>
+  </div>
+
+</div><!-- /omega-section -->
+<div class="mag-section">
+  <div class="section-label">Mineral</div>
+  <div class="mag-section-title">Zinc (Çinko) &amp; Copper (Bakır)</div>
+
+  <!-- ────────────────────────────────────────
+       ÜRÜN 1 — Dr. Ümit Aktaş Çinko
+  ──────────────────────────────────────── -->
+  <div class="product-card" id="card-drumit">
+    <div class="card-header">
+      <div>
+        <div class="product-name">Dr. Ümit Aktaş Çinko (L-OptiZinc®)</div>
+        <div class="compound-list">
+          <div class="compound-row">
+            <div class="compound-pill elemental">Çinko <span>15 mg</span></div>
+          </div>
+          <div class="compound-row">
+            <div class="compound-pill">L-OptiZinc® <span>15 mg</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="week-grid-wrapper">
+      <div class="week-grid has-two-meals" id="grid-drumit"><div class="corner">🌤️</div></div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       ÜRÜN 2 — Chelatex Çinko Bakır
+  ──────────────────────────────────────── -->
+  <div class="product-card" id="card-chelatex">
+    <div class="card-header">
+      <div>
+        <div class="product-name">Chelatex Çinko Bakır</div>
+        <div class="compound-list">
+          <div class="compound-row">
+            <div class="compound-pill elemental">Çinko <span>15 mg</span></div>
+            <div class="compound-pill elemental">Bakır <span>1500 µg</span></div>
+          </div>
+          <div class="compound-row">
+            <div class="compound-pill">Çinko Bisglisinat Şelat <span>15 mg</span></div>
+            <div class="compound-pill">Bakır Bisglisinat Şelat <span>1500 µg</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="week-grid-wrapper">
+      <div class="week-grid has-two-meals" id="grid-chelatex"><div class="corner">🌙</div></div>
+    </div>
+  </div>
+
+</div><!-- /zinc-section -->
+
+<!-- Bu etiket, "Güncel Halini Dosya Olarak İndir" ile indirilen dosyalarda
+     o anki ayarları (hangi gün/öğün, hangi ürün "her gün") içerir.
+     Böylece dosya nereye yüklenirse yüklensin (GitHub dahil) aynı
+     düzeni gösterir — tarayıcı hafızasına (localStorage) bağımlı kalmaz. -->
+<script type="application/json" id="baked-config">{"activeDays":{"puremag":[0,4],"longify":[2],"magthreeon":[1,3],"magnimore":[5,6],"chelatex-magnezyum":[0,1,2,3,4,5,6],"drumit":[0,1,2,3,4,5,6],"chelatex":[0,1,2,3,4,5,6],"omepa":[0,4],"longify-omega":[1,3],"supra":[2]},"everydayChoice":{"magnezyum-sabit":"chelatex-magnezyum"}}</script>
+
+<!-- Supabase istemci kütüphanesi: ayarları buluta kaydetmek için -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const DAYS = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+
+  /* ── Product definitions ─────────────────
+     activeDays: 0=Pzt … 6=Paz — these are the DEFAULTS used only
+     the first time (before the user saves any change).
+     meals: which meal rows this product covers ('sabah' | 'oglen' | 'aksam')
+  ─────────────────────────────────────────*/
+  const products = [
+    {
+      id: 'puremag',
+      gridId: 'grid-puremag',
+      meals: ['sabah', 'oglen'],
+      activeDays: [0, 4],
+      category: 'Magnezyum',
+      summaryName: 'Puremag',
+    },
+    {
+      id: 'longify',
+      gridId: 'grid-longify',
+      meals: ['sabah'],
+      activeDays: [1, 2, 3],
+      category: 'Magnezyum',
+      summaryName: 'Longify',
+    },
+    {
+      id: 'magthreeon',
+      gridId: 'grid-magthreeon',
+      meals: ['sabah'],
+      activeDays: [5, 6],
+      category: 'Magnezyum',
+      summaryName: 'Mag-ThreeOn',
+    },
+    {
+      id: 'magnimore',
+      gridId: 'grid-magnimore',
+      meals: ['sabah'],
+      activeDays: [6],
+      category: 'Magnezyum',
+      summaryName: 'Magnimore Plus',
+      everydayGroup: 'magnezyum-sabit',
+    },
+    {
+      id: 'chelatex-magnezyum',
+      gridId: 'grid-chelatex-magnezyum',
+      meals: ['aksam'],
+      activeDays: [0,1,2,3,4,5,6],
+      category: 'Magnezyum',
+      summaryName: 'Chelatex Magnezyum',
+      everydayGroup: 'magnezyum-sabit',
+      defaultEveryday: true,
+    },
+    // ── ZINC (ÇİNKO) & COPPER (BAKIR) ──
+    {
+      id: 'drumit',
+      gridId: 'grid-drumit',
+      meals: ['oglen'],
+      activeDays: [0,1,2,3,4,5,6],
+      category: 'Çinko & Bakır',
+      summaryName: 'Dr. Ümit Aktaş Çinko (L\u2011OptiZinc\u00ae)',
+      everyDay: true,
+    },
+    {
+      id: 'chelatex',
+      gridId: 'grid-chelatex',
+      meals: ['aksam'],
+      activeDays: [0,1,2,3,4,5,6],
+      category: 'Çinko & Bakır',
+      summaryName: 'Chelatex Çinko Bakır',
+      everyDay: true,
+    },
+    // ── OMEGA 3 ──
+    {
+      id: 'omepa',
+      gridId: 'grid-omepa',
+      meals: ['oglen'],
+      activeDays: [0, 4],
+      category: 'Omega 3',
+      summaryName: 'Omepa',
+    },
+    {
+      id: 'longify-omega',
+      gridId: 'grid-longify-omega',
+      meals: ['oglen'],
+      activeDays: [1, 3],
+      category: 'Omega 3',
+      summaryName: 'Longify',
+    },
+    {
+      id: 'supra',
+      gridId: 'grid-supra',
+      meals: ['oglen'],
+      activeDays: [2],
+      category: 'Omega 3',
+      summaryName: 'Supra',
+    },
+  ];
+
+  /* ── Uzak veri deposu: Supabase ──────────
+     Ayarlar (aktif günler + "her gün" seçimi) artık tarayıcı
+     hafızasında değil, Supabase'teki app_state tablosunda tek bir
+     satırda (id='config') JSON olarak tutuluyor. Böylece "Kaydet"
+     butonuna basıldığında değişiklik hangi cihazdan bakılırsa
+     bakılsın görünür. İnternet yoksa/istek başarısız olursa, en
+     son başarılı veriyi tarayıcıda önbellek olarak tutup onu
+     kullanmaya devam ediyoruz. ─────────────────────────────────*/
+  const SUPABASE_URL = 'https://ujakdosgbhnrqrorpasl.supabase.co';
+  /* ═══════════════════════════════════════════════════════════════
+     SUPABASE ANON KEY — BURAYI KENDİ ANAHTARINLA DEĞİŞTİR
+
+     Nasıl bulursun:
+     1. supabase.com'a git → projeni aç
+     2. Sol menüden "Project Settings" (dişli ikonu)
+     3. "API" sekmesine tıkla
+     4. "Project API keys" altındaki "anon public" anahtarı kopyala
+     5. Aşağıdaki tırnaklar arasına yapıştır
+
+     Anahtar şuna benzer: eyJhbGciOiJIUzI1NiIs...
+     ═══════════════════════════════════════════════════════════════ */
+  const SUPABASE_ANON_KEY = 'sb_publishable_3z8jrULrY6mLipuMqdcaqg_Z3haNceK';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const STATE_ROW_ID = 'config';
+  const LOCAL_CACHE_KEY = 'mvgt_state_cache_v1';
+
+  let remoteState = { activeDays: {}, everydayChoice: {} };
+
+  function loadLocalCache() {
+    try { return JSON.parse(localStorage.getItem(LOCAL_CACHE_KEY)) || null; }
+    catch(e) { return null; }
+  }
+  function saveLocalCache(state) {
+    try { localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(state)); }
+    catch(e) { /* önbellek yazılamazsa sorun değil, bir dahaki oturumda tekrar denenir */ }
+  }
+
+  async function loadRemoteState() {
+    try {
+      const { data, error } = await supabaseClient
+        .from('app_state')
+        .select('data')
+        .eq('id', STATE_ROW_ID)
+        .single();
+      if (error || !data) throw error || new Error('Kayıt bulunamadı');
+      remoteState = data.data || { activeDays: {}, everydayChoice: {} };
+      saveLocalCache(remoteState);
+    } catch (e) {
+      console.warn('Supabase\u2019a ulaşılamadı, önbellek/varsayılan ayar kullanılıyor:', e);
+      remoteState = loadLocalCache() || { activeDays: {}, everydayChoice: {} };
+    }
+    return remoteState;
+  }
+
+  async function saveRemoteState() {
+    saveLocalCache(remoteState);
+    try {
+      const { error } = await supabaseClient
+        .from('app_state')
+        .update({ data: remoteState, updated_at: new Date().toISOString() })
+        .eq('id', STATE_ROW_ID);
+      if (error) throw error;
+    } catch (e) {
+      console.warn('Supabase\u2019a kaydedilemedi, değişiklik sadece bu cihazda tutuluyor:', e);
+    }
+  }
+
+  /* ── Load / Save active-day state ───────*/
+  function loadActiveDays() {
+    return remoteState.activeDays || (remoteState.activeDays = {});
+  }
+  async function saveActiveDays(data) {
+    remoteState = { activeDays: data, everydayChoice: loadEverydayChoice() };
+    saveLocalCache(remoteState);
+    try { await saveRemoteState(); } catch(e) { /* local'a kaydettik */ }
+  }
+
+  /* ── Dosyaya gömülü ayarlar (baked-config) ──
+     Öncelik sırası: Supabase'teki kayıt (varsa) > dosyaya gömülü ayar
+     (baked-config) > kodun içindeki sabit varsayılan. ─────────────*/
+  function loadBakedConfig() {
+    try {
+      const el = document.getElementById('baked-config');
+      if (!el) return {};
+      const txt = el.textContent.trim();
+      if (!txt) return {};
+      return JSON.parse(txt) || {};
+    } catch(e) { return {}; }
+  }
+
+  /* ── "Her Gün" ürün seçimi ───────────────
+     Bazı kategorilerde (örn. Magnezyum) birden fazla ürün "her gün
+     alınan sabit ürün" adayı olabilir (everydayGroup ile işaretli).
+     Bu seçim kullanıcı tarafından değiştirilebilir ve kaydedilir. ─*/
+  function loadEverydayChoice() {
+    return remoteState.everydayChoice || (remoteState.everydayChoice = {});
+  }
+  async function saveEverydayChoice(data) {
+    remoteState = { activeDays: loadActiveDays(), everydayChoice: data };
+    saveLocalCache(remoteState);
+    try { await saveRemoteState(); } catch(e) { /* local'a kaydettik */ }
+  }
+
+  async function resolveEverydayChoices() {
+    const choice = loadEverydayChoice();
+    const bakedChoice = (bakedConfig && bakedConfig.everydayChoice) || {};
+    const groups = {};
+    products.forEach(p => {
+      if (p.everydayGroup) {
+        (groups[p.everydayGroup] = groups[p.everydayGroup] || []).push(p);
+      }
+    });
+    Object.keys(groups).forEach(g => {
+      if (!choice[g] || !groups[g].some(p => p.id === choice[g])) {
+        const bakedPick = bakedChoice[g] && groups[g].some(p => p.id === bakedChoice[g])
+          ? groups[g].find(p => p.id === bakedChoice[g])
+          : null;
+        const def = bakedPick || groups[g].find(p => p.defaultEveryday) || groups[g][0];
+        choice[g] = def.id;
+      }
+    });
+    await saveEverydayChoice(choice);
+    products.forEach(p => {
+      if (p.everydayGroup) p.everyDay = (choice[p.everydayGroup] === p.id);
+    });
+    return choice;
+  }
+
+  function applyEverydayButtonStates(choice) {
+    document.querySelectorAll('.everyday-select-btn').forEach(btn => {
+      const isActive = choice[btn.dataset.group] === btn.dataset.productId;
+      btn.classList.toggle('active', isActive);
+      btn.textContent = isActive ? '✓ Her Gün Ürünü' : 'Her Gün Ürünü Yap';
+    });
+  }
+
+  function initEverydaySelectors() {
+    document.querySelectorAll('.everyday-select-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const group = btn.dataset.group;
+        const pid = btn.dataset.productId;
+        const choice = loadEverydayChoice();
+        if (choice[group] === pid) return; // zaten seçili
+        choice[group] = pid;
+        await saveEverydayChoice(choice);
+        products.forEach(p => {
+          if (p.everydayGroup === group) p.everyDay = (p.id === pid);
+        });
+        applyEverydayButtonStates(choice);
+        renderSummary();
+      });
+    });
+  }
+
+  /* ── Güncel ayarları dosyaya gömüp indirme ─────────────
+     Ekranda o an ne görünüyorsa (kaydedilmiş olsun olmasın),
+     onu YENİ bir dosyanın içine "varsayılan" olarak gömer.
+     Bu dosya nereye yüklenirse yüklensin (GitHub dahil) aynı
+     düzeni gösterir. ─────────────────────────────────────*/
+  function currentEverydayChoiceMap() {
+    const map = {};
+    products.forEach(p => {
+      if (p.everydayGroup && p.everyDay) map[p.everydayGroup] = p.id;
+    });
+    return map;
+  }
+
+  function downloadUpdatedFile() {
+    const config = {
+      activeDays: {},
+      everydayChoice: currentEverydayChoiceMap(),
+    };
+    products.forEach(p => {
+      config.activeDays[p.id] = Array.from(p.currentActive).sort((a, b) => a - b);
+    });
+
+    const clone = document.documentElement.cloneNode(true);
+
+    /* week-grid'leri şablon haline döndür: sadece köşe ikonu kalsın,
+       gün başlıkları ve kaydet satırını JS tekrar zaten oluşturacak.
+       Bu adım olmadan, indirilen dosya tekrar açıldığında günler
+       iki kere eklenip tabloyu bozar. */
+    clone.querySelectorAll('.week-grid').forEach(g => {
+      const corner = g.querySelector('.corner');
+      g.innerHTML = '';
+      if (corner) g.appendChild(corner.cloneNode(true));
+    });
+
+    /* özet tablo/şeritleri de temizle, JS zaten yeniden dolduracak */
+    const head = clone.querySelector('#summary-head-row');
+    if (head) head.innerHTML = '<th>Gün</th>';
+    const body = clone.querySelector('#summary-body');
+    if (body) body.innerHTML = '';
+    const strips = clone.querySelector('#summary-strips');
+    if (strips) strips.innerHTML = '';
+
+    /* dosyaya gömülü ayarı güncelle */
+    const cfgEl = clone.querySelector('#baked-config');
+    if (cfgEl) cfgEl.textContent = JSON.stringify(config);
+
+    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'index.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  /* ── Build a grid ───────────────────────*/
+  function buildGrid(prod, allActiveDays) {
+    const grid = document.getElementById(prod.gridId);
+
+    /* corner icon: shows which time(s) of day this product covers */
+    const corner = grid.querySelector('.corner');
+    if (corner) {
+      const icons = [];
+      if (prod.meals.includes('sabah')) icons.push('☀️');
+      if (prod.meals.includes('oglen')) icons.push('🌤️');
+      if (prod.meals.includes('aksam')) icons.push('🌙');
+      corner.textContent = icons.join('');
+    }
+
+    /* current active days: Supabase'ten gelen kayıt varsa onu kullan,
+       yoksa dosyaya gömülü ayarı, o da yoksa kodun sabit varsayılanını kullan */
+    const bakedDays = bakedConfig.activeDays && bakedConfig.activeDays[prod.id];
+    const baseDefault = bakedDays !== undefined ? bakedDays : prod.activeDays;
+    const saved = allActiveDays[prod.id];
+    const currentActive = new Set(saved !== undefined ? saved : baseDefault);
+    prod.currentActive = currentActive; // özet tablonun okuyacağı canlı referans
+
+    /* day headers — clickable to toggle active/inactive */
+    DAYS.forEach((d, i) => {
+      const el = document.createElement('div');
+      el.className = 'day-header' + (currentActive.has(i) ? ' active-day' : '');
+      el.textContent = d;
+      el.dataset.dayIndex = i;
+      el.addEventListener('click', () => {
+        if (currentActive.has(i)) currentActive.delete(i);
+        else currentActive.add(i);
+        el.classList.toggle('active-day');
+        renderSummary(); // özet tabloyu anlık güncelle (henüz kaydedilmemiş olsa da)
+      });
+      grid.appendChild(el);
+    });
+
+    /* meal/dose rows intentionally omitted — grid only shows corner icon + day headers */
+  }
+
+  /* ── Build the weekly summary table from the single source of truth ─*/
+  function mealIcon(meal) {
+    return meal === 'sabah' ? '☀️' : meal === 'oglen' ? '🌤️' : '🌙';
+  }
+  function mealIcons(meals) {
+    return meals.map(mealIcon).join('');
+  }
+
+  function renderSummary() {
+    const tableCategories = []; // sadece haftalık değişen ürünü olan kategoriler tabloda sütun olur
+    const allCategories = []; // şeritler için: tüm kategoriler, ilk görüldükleri sırada
+    products.forEach(p => {
+      if (!allCategories.includes(p.category)) allCategories.push(p.category);
+      if (!p.everyDay && !tableCategories.includes(p.category)) tableCategories.push(p.category);
+    });
+    const categories = tableCategories;
+
+    /* başlık satırı */
+    const headRow = document.getElementById('summary-head-row');
+    headRow.innerHTML = '<th>Gün</th>' + categories.map(c => `<th>${c}</th>`).join('');
+
+    /* hangi günler en az bir üründe aktif? (hafta sonu dahil, sadece varsa gösterilir) */
+    const activeDayIndexes = DAYS.map((_, i) => i).filter(i =>
+      products.some(p => !p.everyDay && p.currentActive.has(i))
+    );
+
+    /* gövde satırları */
+    const body = document.getElementById('summary-body');
+    body.innerHTML = activeDayIndexes.map(dayIdx => {
+      const cells = categories.map(cat => {
+        const matches = products.filter(p =>
+          p.category === cat && !p.everyDay && p.currentActive.has(dayIdx)
+        );
+        if (matches.length === 0) return '<td>—</td>';
+        const pills = matches.map(p =>
+          `<span class="summary-pill">${p.summaryName}<span class="ic">${mealIcons(p.meals)}</span></span>`
+        ).join(' ');
+        return `<td>${pills}</td>`;
+      }).join('');
+      return `<tr><td>${DAYS[dayIdx]}</td>${cells}</tr>`;
+    }).join('');
+
+    /* "Her Gün" şeritleri — kategoriye göre gruplanmış everyDay ürünler */
+    const strips = document.getElementById('summary-strips');
+    strips.innerHTML = allCategories.map(cat => {
+      const everyDayProds = products.filter(p => p.category === cat && p.everyDay);
+      if (everyDayProds.length === 0) return '';
+      const items = everyDayProds.map(p => {
+        const active = p.currentActive || new Set();
+        const isFullWeek = [0,1,2,3,4,5,6].every(d => active.has(d));
+        const hergunBadge = `<span class="hergun-badge ${isFullWeek ? 'active' : 'inactive'}">Her Gün</span>`;
+        let html = `<span class="summary-pill full-name"><span class="txt">${p.summaryName}</span><span class="ic">${mealIcons(p.meals)}</span>${hergunBadge}</span>`;
+        // Sadece Çinko & Bakır kategorisindeki ürünlere mini gün satırı ekle
+        if (p.category === 'Çinko & Bakır') {
+          const mealIcs = [];
+          if (p.meals.includes('sabah')) mealIcs.push('☀️');
+          if (p.meals.includes('oglen')) mealIcs.push('🌤️');
+          if (p.meals.includes('aksam')) mealIcs.push('🌙');
+          const miniDays = DAYS.map((d, i) => `<span class="mini-day ${active.has(i) ? 'active' : ''}">${d}</span>`).join('');
+          html += `<div class="mini-day-strip"><span class="mini-icon">${mealIcs.join('')}</span>${miniDays}</div>`;
+        }
+        return html;
+      }).join('');
+      return `
+        <div class="summary-base-strip">
+          <span class="label">Her Gün — ${cat}</span>
+          <div class="strip-items">${items}</div>
+        </div>`;
+    }).join('');
+  }
+
+  /* ── Tüm ürünlerin gün seçimini tek seferde kaydet ─────
+     Kart bazlı ayrı "Kaydet" butonları kaldırıldı; artık sayfanın
+     en altındaki tek buton, o an ekrandaki TÜM ürünlerin
+     currentActive setlerini toplayıp tek bir Supabase yazma
+     işlemiyle kaydediyor. ───────────────────────────────*/
+  async function saveAllActiveDays() {
+    const all = {};
+    products.forEach(p => {
+      if (p.currentActive) all[p.id] = Array.from(p.currentActive).sort((a, b) => a - b);
+    });
+    const choice = {};
+    products.forEach(p => {
+      if (p.everydayGroup && p.everyDay) choice[p.everydayGroup] = p.id;
+    });
+    remoteState = { activeDays: all, everydayChoice: choice };
+    saveLocalCache(remoteState);
+    try {
+      await saveRemoteState();
+      return { success: true, source: 'cloud' };
+    } catch (e) {
+      return { success: true, source: 'local' };
+    }
+  }
+
+  /* ── Init ───────────────────────────────
+     Ayarlar artık Supabase'ten async çekildiği için, arayüzü kurmadan
+     önce bu isteğin bitmesini bekliyoruz. window.appReady, HTML'den
+     sonraki script bloğunun (özet tablosunu ilk kez dolduran) bu
+     kurulumun bitmesini beklemesini sağlıyor. ─────────────────────*/
+  const bakedConfig = loadBakedConfig();
+  window.downloadUpdatedFile = downloadUpdatedFile;
+  window.renderSummary = renderSummary;
+  window.saveAllActiveDays = saveAllActiveDays;
+  window.appReady = loadRemoteState().then(async () => {
+    const allActiveDays = loadActiveDays();
+    const everydayChoice = await resolveEverydayChoices();
+    products.forEach(p => buildGrid(p, allActiveDays));
+    initEverydaySelectors();
+    applyEverydayButtonStates(everydayChoice);
+  });
+</script>
+<style>
+  .summary-section{
+    max-width:720px;
+    margin:0 auto 48px;
+  }
+  .summary-table-wrap{
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:14px;
+    overflow:hidden;
+    background:#121830;
+  }
+  .summary-table-wrap table{
+    width:100%;
+    border-collapse:collapse;
+  }
+  .summary-table-wrap thead th{
+    background:#0d1220;
+    color:#42a5f5;
+    font-size:.72rem;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    padding:12px 6px;
+    text-align:center;
+    border-bottom:1px solid rgba(255,255,255,0.12);
+  }
+  .summary-table-wrap thead th:first-child{
+    text-align:left;
+    padding-left:16px;
+    width:54px;
+  }
+  .summary-table-wrap tbody td{
+    padding:11px 6px;
+    text-align:center;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+    vertical-align:middle;
+  }
+  .summary-table-wrap tbody tr:last-child td{border-bottom:none;}
+  .summary-table-wrap tbody td:first-child{
+    text-align:left;
+    padding-left:16px;
+    font-weight:700;
+    font-size:.85rem;
+    background:#0d1220;
+  }
+  .summary-table-wrap tbody tr:nth-child(even) td:not(:first-child){
+    background:#15203f;
+  }
+  .summary-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    background:#0d1526;
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:18px;
+    padding:4px 9px;
+    font-size:.74rem;
+    font-weight:600;
+    color:#cfe0ff;
+    white-space:nowrap;
+    max-width:100%;
+  }
+  .summary-pill .ic{
+    font-size:.62rem;
+    line-height:1;
+    display:inline-flex;
+    gap:1px;
+  }
+  .summary-base-strip{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    flex-wrap:wrap;
+    gap:10px;
+    background:#121830;
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:14px;
+    padding:12px 16px;
+    margin-top:16px;
+  }
+  .summary-base-strip .label{
+    font-size:.6rem;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:#9aa3c4;
+    align-self:center;
+  }
+  .summary-base-strip .strip-items{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    flex:1;
+  }
+  .summary-pill.full-name{
+    white-space:normal;
+    text-align:left;
+    line-height:1.35;
+    align-items:flex-start;
+    gap:8px;
+  }
+  .summary-pill.full-name .txt{
+    flex:1;
+    word-break:keep-all;
+  }
+  .summary-pill.full-name .ic{
+    flex-shrink:0;
+    margin-top:2px;
+  }
+  .summary-legend{
+    display:flex;
+    justify-content:center;
+    gap:18px;
+    flex-wrap:wrap;
+    font-size:.68rem;
+    color:#9aa3c4;
+    margin-top:14px;
+  }
+  .summary-legend .item{display:flex;align-items:center;gap:5px;}
+  .summary-legend .ic{font-size:.7rem;}
+
+  @media (max-width: 420px){
+    .summary-pill{font-size:.66rem;padding:3px 7px;}
+    .summary-table-wrap thead th{font-size:.62rem;padding:10px 3px;}
+    .summary-table-wrap tbody td:first-child{font-size:.78rem;}
+  }
+</style>
+
+<div class="summary-section">
+  <div class="section-label">Özet</div>
+  <div class="mag-section-title">Haftalık Takviye Tablosu</div>
+
+  <div class="summary-table-wrap">
+    <table>
+      <thead>
+        <tr id="summary-head-row"><th>Gün</th></tr>
+      </thead>
+      <tbody id="summary-body"></tbody>
+    </table>
+  </div>
+
+  <div id="summary-strips"></div>
+
+  <div class="summary-legend">
+    <span class="item"><span class="ic">☀️</span> Sabah</span>
+    <span class="item"><span class="ic">🌤️</span> Öğlen</span>
+    <span class="item"><span class="ic">🌙</span> Akşam</span>
+  </div>
+</div>
+
+<footer>
+  <div class="global-save-row">
+    <button id="global-save-btn" class="global-save-btn">Kaydet</button>
+    <span id="global-save-feedback" class="global-save-feedback">✓ Kaydedildi</span>
+  </div>
+  <button id="download-file-btn" class="download-file-btn">Güncel halini dosya olarak indir</button>
+</footer>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch((err) => {
+        console.warn('Service worker kaydı başarısız:', err);
+      });
+    });
+  }
+  /* Özet tablosunun HTML'i artık DOM'da — Supabase'ten veri gelip
+     ürün ızgaraları kurulduktan (appReady) sonra dolduruyoruz. */
+  window.appReady.then(() => {
+    window.renderSummary();
+    const downloadBtn = document.getElementById('download-file-btn');
+    if (downloadBtn) downloadBtn.addEventListener('click', window.downloadUpdatedFile);
+
+    /* Tek "Kaydet" butonu: sayfadaki TÜM ürünlerin o anki gün seçimini
+       tek seferde toplayıp Supabase'e yazar. Kart bazlı ayrı kaydetmeye
+       gerek kalmaz — gün değiştirip en sonda buraya basmanız yeterli. */
+    const globalSaveBtn = document.getElementById('global-save-btn');
+    const globalSaveFeedback = document.getElementById('global-save-feedback');
+    if (globalSaveBtn) {
+      globalSaveBtn.addEventListener('click', async () => {
+        globalSaveBtn.disabled = true;
+        globalSaveBtn.textContent = 'Kaydediliyor...';
+        try {
+          const result = await window.saveAllActiveDays();
+          globalSaveFeedback.textContent = result.source === 'cloud' ? '✓ Kaydedildi (Bulut)' : '✓ Kaydedildi (Yerel)';
+          globalSaveFeedback.style.color = '#4ade80';
+          globalSaveFeedback.classList.add('show');
+          setTimeout(() => globalSaveFeedback.classList.remove('show'), 2200);
+        } catch (e) {
+          globalSaveFeedback.textContent = '✗ Kaydedilemedi';
+          globalSaveFeedback.style.color = '#ef4444';
+          globalSaveFeedback.classList.add('show');
+          setTimeout(() => {
+            globalSaveFeedback.classList.remove('show');
+            globalSaveFeedback.style.color = '';
+          }, 2200);
+        } finally {
+          globalSaveBtn.disabled = false;
+          globalSaveBtn.textContent = 'Kaydet';
+        }
+      });
+    }
+  });
+</script>
+</body></html>
