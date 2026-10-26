@@ -950,17 +950,49 @@
   }
   /* Verilen durumu buluta yazar; başarılıysa true, değilse false döner. */
   let lastPushError = '';
+  async function restCall(method, url, body, extraHeaders) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 10000);
+    try {
+      return await fetch(url, {
+        method,
+        signal: ctrl.signal,
+        headers: Object.assign({
+          'apikey': SUPABASE_ANON_KEY,
+          'Content-Type': 'application/json'
+        }, extraHeaders || {}),
+        body: JSON.stringify(body)
+      });
+    } finally { clearTimeout(timer); }
+  }
   async function pushState(state) {
     lastPushError = '';
+    const payload = { data: state, updated_at: new Date().toISOString() };
+    const base = SUPABASE_URL + '/rest/v1/app_state';
     try {
-      const payload = { data: state, updated_at: new Date().toISOString() };
-      const res = await withTimeout(
-        supabaseClient.from('app_state').update(payload).eq('id', STATE_ROW_ID), 10000);
-      if (res.error) throw res.error;
+      /* 1) mevcut satırı güncelle (kaç satır etkilendiğini de öğren) */
+      const r = await restCall('PATCH', base + '?id=eq.' + encodeURIComponent(STATE_ROW_ID), payload,
+        { 'Prefer': 'return=minimal,count=exact' });
+      if (!r.ok) {
+        const t = await r.text().catch(() => '');
+        throw new Error('HTTP ' + r.status + ' ' + t.slice(0, 60));
+      }
+      const cr = r.headers.get('Content-Range') || '';
+      const n = cr.split('/')[1];
+      if (n === '0') {
+        /* 2) hiç satır güncellenmedi → satırı oluşturmayı dene */
+        const r2 = await restCall('POST', base, Object.assign({ id: STATE_ROW_ID }, payload),
+          { 'Prefer': 'resolution=merge-duplicates,return=minimal' });
+        if (!r2.ok) {
+          const t2 = await r2.text().catch(() => '');
+          throw new Error('satır güncellenemedi/eklenemedi: HTTP ' + r2.status + ' ' + t2.slice(0, 50));
+        }
+      }
       return true;
     } catch (e) {
       console.warn('Buluta yazılamadı:', e);
-      lastPushError = String((e && (e.message || e.details || e.code)) || e).slice(0, 90);
+      const m = (e && e.name === 'AbortError') ? 'zaman aşımı' : String((e && e.message) || e || 'bilinmiyor');
+      lastPushError = (m || 'bilinmiyor').slice(0, 110);
       return false;
     }
   }
@@ -1709,7 +1741,7 @@
   </div>
 
   <button id="download-file-btn" class="download-file-btn">Güncel halini dosya olarak indir</button>
-  <div style="text-align:center;font-size:.55rem;opacity:.35;margin-top:8px;">sürüm 5 · hata tanılı</div>
+  <div style="text-align:center;font-size:.55rem;opacity:.35;margin-top:8px;">sürüm 6 · hata tanılı</div>
 </footer>
 
 <script>
@@ -1741,7 +1773,7 @@
           if (result.source === 'cloud') {
             showSaveFeedback('✓ Buluta kaydedildi', '#4ade80', 2200);
           } else {
-            showSaveFeedback('⚠ Sadece bu cihaza kaydedildi · internet gelince buluta gönderilecek' + (result.error ? ' [Hata: ' + result.error + ']' : ''), '#fbbf24', 9000);
+            showSaveFeedback('⚠ Sadece bu cihaza kaydedildi · internet gelince buluta gönderilecek' + ' [Hata: ' + (result.error || 'bilinmiyor') + ']', '#fbbf24', 9000);
           }
         } catch (e) {
           globalSaveFeedback.textContent = '✗ Kaydedilemedi';
