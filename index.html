@@ -1036,19 +1036,6 @@
     return remoteState;
   }
 
-  async function saveRemoteState() {
-    saveLocalCache(remoteState);
-    try {
-      const { error } = await supabaseClient
-        .from('app_state')
-        .update({ data: remoteState, updated_at: new Date().toISOString() })
-        .eq('id', STATE_ROW_ID);
-      if (error) throw error;
-    } catch (e) {
-      console.warn('Supabase\u2019a kaydedilemedi, değişiklik sadece bu cihazda tutuluyor:', e);
-    }
-  }
-
   /* ── Load active-day state ───────*/
   function loadActiveDays() {
     return remoteState.activeDays || (remoteState.activeDays = {});
@@ -1741,7 +1728,7 @@
   </div>
 
   <button id="download-file-btn" class="download-file-btn">Güncel halini dosya olarak indir</button>
-  <div style="text-align:center;font-size:.55rem;opacity:.35;margin-top:8px;">sürüm 6 · hata tanılı</div>
+  <div style="text-align:center;font-size:.55rem;opacity:.35;margin-top:8px;">sürüm 7</div>
 </footer>
 
 <script>
