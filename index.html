@@ -906,7 +906,10 @@
      Anahtar şuna benzer: eyJhbGciOiJIUzI1NiIs...
      ═══════════════════════════════════════════════════════════════ */
   const SUPABASE_ANON_KEY = 'sb_publishable_3z8jrULrY6mLipuMqdcaqg_Z3haNceK';
-  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  /* Kütüphane yüklenemezse (internet yokken) uygulama çökmesin */
+  let supabaseClient = null;
+  try { supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
+  catch (e) { console.warn('Supabase kütüphanesi yüklenemedi:', e); }
   const STATE_ROW_ID = 'config';
   const LOCAL_CACHE_KEY = 'mvgt_state_cache_v1';
 
