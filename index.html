@@ -953,14 +953,8 @@
     try {
       const payload = { data: state, updated_at: new Date().toISOString() };
       const res = await withTimeout(
-        supabaseClient.from('app_state').update(payload).eq('id', STATE_ROW_ID).select('id'), 10000);
+        supabaseClient.from('app_state').update(payload).eq('id', STATE_ROW_ID), 10000);
       if (res.error) throw res.error;
-      if (!res.data || res.data.length === 0) {
-        /* satır yoksa oluştur */
-        const ins = await withTimeout(
-          supabaseClient.from('app_state').insert(Object.assign({ id: STATE_ROW_ID }, payload)), 10000);
-        if (ins.error) throw ins.error;
-      }
       return true;
     } catch (e) {
       console.warn('Buluta yazılamadı:', e);
