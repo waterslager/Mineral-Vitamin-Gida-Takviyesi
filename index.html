@@ -415,6 +415,8 @@
       transition: opacity .4s;
     }
     .global-save-feedback.show { opacity: 1; }
+    .global-save-row { flex-wrap: wrap; justify-content: center; }
+    .global-save-feedback { text-align: center; max-width: 100%; }
 
     /* ── FOOTER ── */
     footer {
@@ -919,6 +921,75 @@
     catch(e) { /* önbellek yazılamazsa sorun değil, bir dahaki oturumda tekrar denenir */ }
   }
 
+  async function loadRemoteState() {
+    if (hasPending() && loadLocalCache()) {
+      /* buluta gitmemiş yerel değişiklik var: onu koru, arka planda göndermeyi dene */
+      remoteState = loadLocalCache();
+      syncPending().then(ok => { if (ok) showSaveFeedback('✓ Bekleyen değişiklikler buluta gönderildi', '#4ade80'); });
+      return remoteState;
+    }
+    try {
+      const { data, error } = await supabaseClient
+        .from('app_state')
+        .select('data')
+        .eq('id', STATE_ROW_ID)
+        .single();
+      if (error || !data) throw error || new Error('Kayıt bulunamadı');
+      remoteState = data.data || { activeDays: {}, everydayChoice: {}, enabled: {} };
+      saveLocalCache(remoteState);
+    } catch (e) {
+      console.warn('Supabase\u2019a ulaşılamadı, önbellek/varsayılan ayar kullanılıyor:', e);
+      remoteState = loadLocalCache() || { activeDays: {}, everydayChoice: {}, enabled: {} };
+    }
+    return remoteState;
+  }
+
+  const PENDING_KEY = 'mvgt_pending_v1';
+  function withTimeout(promise, ms) {
+    return Promise.race([promise, new Promise((_, rej) => setTimeout(() => rej(new Error('zaman aşımı')), ms))]);
+  }
+  /* Verilen durumu buluta yazar; başarılıysa true, değilse false döner. */
+  async function pushState(state) {
+    try {
+      const payload = { data: state, updated_at: new Date().toISOString() };
+      const res = await withTimeout(
+        supabaseClient.from('app_state').update(payload).eq('id', STATE_ROW_ID).select('id'), 10000);
+      if (res.error) throw res.error;
+      if (!res.data || res.data.length === 0) {
+        /* satır yoksa oluştur */
+        const ins = await withTimeout(
+          supabaseClient.from('app_state').insert(Object.assign({ id: STATE_ROW_ID }, payload)), 10000);
+        if (ins.error) throw ins.error;
+      }
+      return true;
+    } catch (e) {
+      console.warn('Buluta yazılamadı:', e);
+      return false;
+    }
+  }
+  async function saveRemoteState() {
+    saveLocalCache(remoteState);
+    try { localStorage.setItem(PENDING_KEY, '1'); } catch (e) {}
+    const ok = await pushState(remoteState);
+    if (ok) { try { localStorage.removeItem(PENDING_KEY); } catch (e) {} }
+    return ok;
+  }
+  function hasPending() {
+    try { return localStorage.getItem(PENDING_KEY) === '1'; } catch (e) { return false; }
+  }
+  /* Bekleyen (buluta gitmemiş) yerel değişiklik varsa gönderir. */
+  let syncing = false;
+  async function syncPending() {
+    if (syncing || !hasPending()) return false;
+    const local = loadLocalCache();
+    if (!local) return false;
+    syncing = true;
+    try {
+      const ok = await pushState(local);
+      if (ok) { try { localStorage.removeItem(PENDING_KEY); } catch (e) {} }
+      return ok;
+    } finally { syncing = false; }
+  }
   async function loadRemoteState() {
     try {
       const { data, error } = await supabaseClient
@@ -1426,12 +1497,8 @@
     products.forEach(p => { if (p.currentMeals) mealsAll[p.id] = Array.from(p.currentMeals); });
     remoteState = { activeDays: all, everyday: everyAll, prevDays: Object.assign({}, loadPrevDays()), enabled: enabled, meals: mealsAll };
     saveLocalCache(remoteState);
-    try {
-      await saveRemoteState();
-      return { success: true, source: 'cloud' };
-    } catch (e) {
-      return { success: true, source: 'local' };
-    }
+    const ok = await saveRemoteState();
+    return { success: true, source: ok ? 'cloud' : 'local' };
   }
 
   /* ── Init ───────────────────────────────
@@ -1443,6 +1510,20 @@
   window.downloadUpdatedFile = downloadUpdatedFile;
   window.renderSummary = renderSummary;
   window.saveAllActiveDays = saveAllActiveDays;
+
+  function showSaveFeedback(text, color, ms) {
+    const el = document.getElementById('global-save-feedback');
+    if (!el) return;
+    el.textContent = text;
+    el.style.color = color || '';
+    el.classList.add('show');
+    setTimeout(() => { el.classList.remove('show'); el.style.color = ''; }, ms || 3000);
+  }
+  async function trySyncAndNotify() {
+    if (await syncPending()) showSaveFeedback('✓ Bekleyen değişiklikler buluta gönderildi', '#4ade80');
+  }
+  window.addEventListener('online', trySyncAndNotify);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') trySyncAndNotify(); });
   window.appReady = loadRemoteState().then(async () => {
     const allActiveDays = loadActiveDays();
     products.forEach(p => buildGrid(p, allActiveDays));
@@ -1659,10 +1740,11 @@
         globalSaveBtn.textContent = 'Kaydediliyor...';
         try {
           const result = await window.saveAllActiveDays();
-          globalSaveFeedback.textContent = result.source === 'cloud' ? '✓ Kaydedildi (Bulut)' : '✓ Kaydedildi (Yerel)';
-          globalSaveFeedback.style.color = '#4ade80';
-          globalSaveFeedback.classList.add('show');
-          setTimeout(() => globalSaveFeedback.classList.remove('show'), 2200);
+          if (result.source === 'cloud') {
+            showSaveFeedback('✓ Buluta kaydedildi', '#4ade80', 2200);
+          } else {
+            showSaveFeedback('⚠ Sadece bu cihaza kaydedildi · internet gelince buluta gönderilecek', '#fbbf24', 4500);
+          }
         } catch (e) {
           globalSaveFeedback.textContent = '✗ Kaydedilemedi';
           globalSaveFeedback.style.color = '#ef4444';

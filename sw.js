@@ -29,17 +29,19 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: serve from cache first, fall back to network, then offline cache
+// Fetch: network first, fall back to cache when offline
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
-        return caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, networkResponse.clone());
-          return networkResponse;
-        });
+        if (!networkResponse || !networkResponse.ok) return networkResponse;
+        const copy = networkResponse.clone();
+        caches.open(CACHE_NAME)
+          .then((cache) => cache.put(event.request, copy))
+          .catch(() => {});
+        return networkResponse;
       })
       .catch(() => {
         return caches.match(event.request).then((cachedResponse) => {
