@@ -299,15 +299,21 @@
       cursor: pointer;
       transition: border-color .2s, color .2s, background .2s;
     }
-    .everyday-select-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
+    .everyday-select-btn { -webkit-tap-highlight-color: transparent; outline: none; }
+    .everyday-select-btn:not(.active) {
+      background: transparent;
+      border-color: rgba(255,255,255,0.2);
+      color: var(--muted);
     }
+    @media (hover: hover) {
+      .everyday-select-btn:not(.active):hover { border-color: var(--accent); color: var(--accent); }
+    }
+    .week-grid.locked .day-header { pointer-events: none; opacity: .6; }
     .everyday-select-btn.active {
       background: #42a5f522;
       border-color: var(--accent);
       color: var(--accent);
-      cursor: default;
+      cursor: pointer;
     }
 
     /* ── WEEKLY GRID ── */
@@ -327,17 +333,17 @@
     }
     /* columns = label + 7 days — label narrow, days equal & snug */
     .week-grid.has-two-meals {
-      grid-template-columns: 52px repeat(7, minmax(0, 1fr));
+      grid-template-columns: 62px repeat(7, minmax(0, 1fr));
     }
 
     /* day header row — clickable to toggle active/inactive */
     .day-header {
       text-align: center;
-      font-size: .6rem;
+      font-size: .55rem;
       font-weight: 700;
-      letter-spacing: .06em;
+      letter-spacing: .03em;
       text-transform: uppercase;
-      padding: 5px 2px;
+      padding: 5px 1px;
       color: var(--muted);
       background: #0d1220;
       border-left: 1px solid rgba(255,255,255,0.08);
@@ -358,8 +364,23 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: .8rem;
+      gap: 0;
+      padding: 0 2px;
     }
+    .meal-btn {
+      background: none;
+      border: none;
+      padding: 4px 2px;
+      font-size: .68rem;
+      line-height: 1;
+      cursor: pointer;
+      opacity: .28;
+      filter: grayscale(1);
+      transition: opacity .15s, filter .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .meal-btn.active { opacity: 1; filter: none; }
+    .meal-btn.moon { font-size: .62rem; }
 
     /* ── GENEL "KAYDET" BUTONU (footer) ── */
     .global-save-row {
@@ -505,7 +526,7 @@
     </div>
 
     <div class="week-grid-wrapper">
-      <div class="week-grid has-two-meals" id="grid-puremag"><div class="corner">☀️🌤️</div></div>
+      <div class="week-grid has-two-meals" id="grid-puremag"><div class="corner"></div></div>
     </div>
   </div>
 
@@ -533,7 +554,7 @@
     </div>
 
     <div class="week-grid-wrapper">
-      <div class="week-grid has-two-meals" id="grid-longify"><div class="corner">☀️</div></div>
+      <div class="week-grid has-two-meals" id="grid-longify"><div class="corner"></div></div>
     </div>
   </div>
 
@@ -568,7 +589,7 @@
     </div>
 
     <div class="week-grid-wrapper">
-      <div class="week-grid has-two-meals" id="grid-magthreeon"><div class="corner">☀️</div></div>
+      <div class="week-grid has-two-meals" id="grid-magthreeon"><div class="corner"></div></div>
     </div>
   </div>
 
@@ -585,8 +606,11 @@
           <div class="compound-pill">Bisglisinat <span>35 mg</span></div>
           <div class="compound-pill">Malat <span>35 mg</span></div>
         </div>
-        <button class="everyday-select-btn" data-group="magnezyum-sabit" data-product-id="magnimore">Her Gün Ürünü Yap</button>
       </div>
+    </div>
+
+    <div class="week-grid-wrapper">
+      <div class="week-grid has-two-meals" id="grid-magnimore"><div class="corner"></div></div>
     </div>
   </div>
 
@@ -606,8 +630,11 @@
             <div class="compound-pill">Vitamin B6 (Piridoksal 5ʼ-Fosfattan) <span>5 mg</span></div>
           </div>
         </div>
-        <button class="everyday-select-btn active" data-group="magnezyum-sabit" data-product-id="chelatex-magnezyum">✓ Her Gün Ürünü</button>
       </div>
+    </div>
+
+    <div class="week-grid-wrapper">
+      <div class="week-grid has-two-meals" id="grid-chelatex-magnezyum"><div class="corner"></div></div>
     </div>
   </div>
 
@@ -638,7 +665,7 @@
       </div>
     </div>
     <div class="week-grid-wrapper">
-      <div class="week-grid has-two-meals" id="grid-omepa"><div class="corner">🌤️</div></div>
+      <div class="week-grid has-two-meals" id="grid-omepa"><div class="corner"></div></div>
     </div>
   </div>
 
@@ -665,7 +692,7 @@
       </div>
     </div>
     <div class="week-grid-wrapper">
-      <div class="week-grid has-two-meals" id="grid-longify-omega"><div class="corner">🌤️</div></div>
+      <div class="week-grid has-two-meals" id="grid-longify-omega"><div class="corner"></div></div>
     </div>
   </div>
 
@@ -691,7 +718,7 @@
       </div>
     </div>
     <div class="week-grid-wrapper">
-      <div class="week-grid has-two-meals" id="grid-supra"><div class="corner">🌤️</div></div>
+      <div class="week-grid has-two-meals" id="grid-supra"><div class="corner"></div></div>
     </div>
   </div>
 
@@ -718,7 +745,7 @@
       </div>
     </div>
     <div class="week-grid-wrapper">
-      <div class="week-grid has-two-meals" id="grid-drumit"><div class="corner">🌤️</div></div>
+      <div class="week-grid has-two-meals" id="grid-drumit"><div class="corner"></div></div>
     </div>
   </div>
 
@@ -742,7 +769,7 @@
       </div>
     </div>
     <div class="week-grid-wrapper">
-      <div class="week-grid has-two-meals" id="grid-chelatex"><div class="corner">🌙</div></div>
+      <div class="week-grid has-two-meals" id="grid-chelatex"><div class="corner"></div></div>
     </div>
   </div>
 
@@ -794,12 +821,14 @@
     },
     {
       id: 'magnimore',
+      gridId: 'grid-magnimore',
       category: 'Magnezyum',
       summaryName: 'Magnimore Plus',
       everydayGroup: 'magnezyum-sabit',
     },
     {
       id: 'chelatex-magnezyum',
+      gridId: 'grid-chelatex-magnezyum',
       category: 'Magnezyum',
       summaryName: 'Chelatex Magnezyum',
       everydayGroup: 'magnezyum-sabit',
@@ -813,6 +842,7 @@
       activeDays: [0,1,2,3,4,5,6],
       category: 'Çinko & Bakır',
       summaryName: 'Dr. Ümit Aktaş Çinko (L\u2011OptiZinc\u00ae)',
+      shortName: 'Dr. Ümit Çinko',
       everyDay: true,
     },
     {
@@ -822,6 +852,7 @@
       activeDays: [0,1,2,3,4,5,6],
       category: 'Çinko & Bakır',
       summaryName: 'Chelatex Çinko Bakır',
+      shortName: 'Chelatex Çinko',
       everyDay: true,
     },
     // ── OMEGA 3 ──
@@ -955,80 +986,61 @@
     } catch(e) { return {}; }
   }
 
-  /* ── "Her Gün" ürün seçimi ───────────────
-     Bazı kategorilerde (örn. Magnezyum) birden fazla ürün "her gün
-     alınan sabit ürün" adayı olabilir (everydayGroup ile işaretli).
-     Bu seçim kullanıcı tarafından değiştirilebilir ve kaydedilir. ─*/
-  function loadEverydayChoice() {
-    return remoteState.everydayChoice || (remoteState.everydayChoice = {});
+  /* ── "Her Gün" anahtarı (HER ürün için bağımsız) ──
+     Açık: ürün 7 gün de alınır, özetteki "Her Gün" şeridinde görünür.
+     Kapalı: haftalık tabloda, en son seçili günlerle görünür. ──*/
+  function loadEverydayMap() { return remoteState.everyday || (remoteState.everyday = {}); }
+  function loadPrevDays() { return remoteState.prevDays || (remoteState.prevDays = {}); }
+  function defaultEveryday(p) {
+    if (bakedConfig.everyday && bakedConfig.everyday[p.id] !== undefined) return !!bakedConfig.everyday[p.id];
+    if (p.everydayGroup) {
+      const old = (remoteState.everydayChoice || {})[p.everydayGroup] || (bakedConfig.everydayChoice || {})[p.everydayGroup];
+      if (old) return old === p.id;
+      return !!p.defaultEveryday;
+    }
+    return !!p.everyDay;
   }
-  async function saveEverydayChoice(data) {
-    remoteState = { activeDays: loadActiveDays(), everydayChoice: data, enabled: loadEnabledState() };
-    saveLocalCache(remoteState);
-    try { await saveRemoteState(); } catch(e) { /* local'a kaydettik */ }
+  function isEveryDayProduct(p) {
+    const m = loadEverydayMap();
+    return m[p.id] !== undefined ? !!m[p.id] : defaultEveryday(p);
+  }
+  function fallbackDays(p) { return p.everydayGroup ? [5, 6] : (p.activeDays || []); }
+
+  function setEveryday(p, on) {
+    if (isEveryDayProduct(p) === on) return;
+    loadEverydayMap()[p.id] = on;
+    if (on) {
+      loadPrevDays()[p.id] = Array.from(p.currentActive).sort((a, b) => a - b);
+      p.currentActive = new Set([0, 1, 2, 3, 4, 5, 6]);
+    } else {
+      const prev = loadPrevDays()[p.id];
+      p.currentActive = new Set(prev !== undefined ? prev : fallbackDays(p));
+    }
+    syncGridUI(p);
+    updateEverydayBtn(p);
+    renderSummary();
   }
 
-  async function resolveEverydayChoices() {
-    const choice = loadEverydayChoice();
-    const bakedChoice = (bakedConfig && bakedConfig.everydayChoice) || {};
-    const groups = {};
+  function updateEverydayBtn(p) {
+    const btn = document.querySelector(`.everyday-select-btn[data-product-id="${p.id}"]`);
+    if (!btn) return;
+    const on = isEveryDayProduct(p);
+    btn.classList.toggle('active', on);
+    btn.textContent = on ? '✓ Her Gün Ürünü' : 'Her Gün Ürünü Yap';
+  }
+
+  function initEverydayButtons() {
     products.forEach(p => {
-      if (p.everydayGroup) {
-        (groups[p.everydayGroup] = groups[p.everydayGroup] || []).push(p);
-      }
-    });
-    Object.keys(groups).forEach(g => {
-      if (!choice[g] || !groups[g].some(p => p.id === choice[g])) {
-        const bakedPick = bakedChoice[g] && groups[g].some(p => p.id === bakedChoice[g])
-          ? groups[g].find(p => p.id === bakedChoice[g])
-          : null;
-        const def = bakedPick || groups[g].find(p => p.defaultEveryday) || groups[g][0];
-        choice[g] = def.id;
-      }
-    });
-    await saveEverydayChoice(choice);
-    return choice;
-  }
-
-  function applyEverydayButtonStates(choice) {
-    document.querySelectorAll('.everyday-select-btn').forEach(btn => {
-      const isActive = choice[btn.dataset.group] === btn.dataset.productId;
-      btn.classList.toggle('active', isActive);
-      btn.textContent = isActive ? '✓ Her Gün Ürünü' : 'Her Gün Ürünü Yap';
-    });
-  }
-
-  function initEverydaySelectors() {
-    document.querySelectorAll('.everyday-select-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const group = btn.dataset.group;
-        const pid = btn.dataset.productId;
-        const choice = loadEverydayChoice();
-        if (choice[group] === pid) return; // zaten seçili
-        const previousPid = choice[group];
-        choice[group] = pid;
-        await saveEverydayChoice(choice);
-
-        /* bu gruptaki ürünlerin gün seçimini yeni duruma göre güncelle:
-           yeni seçilen ürün → haftanın 7 günü de aktif ("her gün")
-           artık seçili olmayan ürün → sadece Cmt + Paz aktif */
-        products.filter(p => p.everydayGroup === group).forEach(p => {
-          if (!p.currentActive) return;
-          if (p.id === pid) {
-            p.currentActive = new Set([0, 1, 2, 3, 4, 5, 6]);
-          } else if (p.id === previousPid) {
-            p.currentActive = new Set([5, 6]);
-          }
-          const card = document.getElementById('card-' + p.id);
-          if (card) {
-            const icons = card.querySelector('.meal-icons-inline');
-            if (icons) icons.textContent = cornerIconsFor(p);
-          }
-        });
-
-        applyEverydayButtonStates(choice);
-        renderSummary();
-      });
+      const card = document.getElementById('card-' + p.id);
+      const host = card && card.querySelector('.card-header > div');
+      if (!host) return;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'everyday-select-btn';
+      btn.dataset.productId = p.id;
+      btn.addEventListener('click', () => { setEveryday(p, !isEveryDayProduct(p)); btn.blur(); });
+      host.appendChild(btn);
+      updateEverydayBtn(p);
     });
   }
 
@@ -1037,18 +1049,18 @@
      onu YENİ bir dosyanın içine "varsayılan" olarak gömer.
      Bu dosya nereye yüklenirse yüklensin (GitHub dahil) aynı
      düzeni gösterir. ─────────────────────────────────────*/
-  function currentEverydayChoiceMap() {
-    return Object.assign({}, loadEverydayChoice());
-  }
-
   function downloadUpdatedFile() {
     const config = {
       activeDays: {},
-      everydayChoice: currentEverydayChoiceMap(),
+      everyday: {},
+      prevDays: Object.assign({}, loadPrevDays()),
       enabled: Object.assign({}, loadEnabledState()),
+      meals: {},
     };
     products.forEach(p => {
       config.activeDays[p.id] = Array.from(p.currentActive).sort((a, b) => a - b);
+      config.everyday[p.id] = isEveryDayProduct(p);
+      config.meals[p.id] = Array.from(p.currentMeals || []);
     });
 
     const clone = document.documentElement.cloneNode(true);
@@ -1058,23 +1070,22 @@
        Bu adım olmadan, indirilen dosya tekrar açıldığında günler
        iki kere eklenip tabloyu bozar. */
     clone.querySelectorAll('.week-grid').forEach(g => {
-      const corner = g.querySelector('.corner');
-      g.innerHTML = '';
-      if (corner) g.appendChild(corner.cloneNode(true));
+      g.innerHTML = '<div class="corner"></div>';
     });
-    /* everydayGroup ürünlerinde buton yanındaki simgeyi temizle */
-    clone.querySelectorAll('.meal-icons-inline').forEach(el => el.remove());
 
     /* +/- düğmelerini de temizle: JS her yüklemede bunları yeniden
        oluşturuyor. Statik HTML'de bırakılırsa tıklama olayı (click
        listener) olmadan cansız bir buton olarak kalırdı. */
     clone.querySelectorAll('.enable-toggle-btn').forEach(b => b.remove());
+    clone.querySelectorAll('.everyday-select-btn').forEach(b => b.remove());
 
     /* özet tablo/şeritleri de temizle, JS zaten yeniden dolduracak */
     const head = clone.querySelector('#summary-head-row');
     if (head) head.innerHTML = '<th>Gün</th>';
     const body = clone.querySelector('#summary-body');
     if (body) body.innerHTML = '';
+    const zinc = clone.querySelector('#summary-zinc');
+    if (zinc) zinc.innerHTML = '';
     const strips = clone.querySelector('#summary-strips');
     if (strips) strips.innerHTML = '';
 
@@ -1095,70 +1106,76 @@
   }
 
   /* ── Build a grid ───────────────────────*/
+  const MEAL_KEYS = ['sabah', 'oglen', 'aksam'];
+  const MEAL_ICON_MAP = { sabah: '☀️', oglen: '🌤️', aksam: '🌙' };
+
   function buildGrid(prod, allActiveDays) {
-    /* current active days */
-    let currentActive;
-    if (prod.everydayGroup) {
-      const choice = loadEverydayChoice();
-      const isPick = choice[prod.everydayGroup] === prod.id;
-      currentActive = new Set(isPick ? [0, 1, 2, 3, 4, 5, 6] : [5, 6]);
-    } else {
-      const bakedDays = bakedConfig.activeDays && bakedConfig.activeDays[prod.id];
-      const baseDefault = bakedDays !== undefined ? bakedDays : prod.activeDays;
-      const saved = allActiveDays[prod.id];
-      currentActive = new Set(saved !== undefined ? saved : baseDefault);
-    }
-    prod.currentActive = currentActive;
-
-    /* everydayGroup ürünlerinde (Magnimore / Chelatex Magnezyum) gün
-       satırı hiç yok; sadece butonun yanına küçük, düz bir simge
-       eklenir. Grid/gün seçimi bu ürünlerde tamamen otomatik. */
-    if (prod.everydayGroup) {
-      const card = document.getElementById('card-' + prod.id);
-      const headerDiv = card.querySelector('.card-header > div');
-      let icons = headerDiv.querySelector('.meal-icons-inline');
-      if (!icons) {
-        icons = document.createElement('span');
-        icons.className = 'meal-icons-inline';
-        const btn = headerDiv.querySelector('.everyday-select-btn');
-        if (btn) btn.insertAdjacentElement('afterend', icons);
-        else headerDiv.appendChild(icons);
-      }
-      icons.textContent = cornerIconsFor(prod);
-      return;
+    /* aktif günler */
+    const bakedDays = bakedConfig.activeDays && bakedConfig.activeDays[prod.id];
+    const saved = allActiveDays[prod.id];
+    const everyOn = isEveryDayProduct(prod);
+    const baseDefault = bakedDays !== undefined ? bakedDays : fallbackDays(prod);
+    const savedDays = saved !== undefined ? saved : baseDefault;
+    prod.currentActive = new Set(everyOn ? [0, 1, 2, 3, 4, 5, 6] : savedDays);
+    /* 'her gün' kapatılınca dönülecek günler */
+    const pd = loadPrevDays();
+    if (pd[prod.id] === undefined) {
+      if (bakedConfig.prevDays && bakedConfig.prevDays[prod.id] !== undefined) pd[prod.id] = bakedConfig.prevDays[prod.id];
+      else if (!everyOn) pd[prod.id] = savedDays;
     }
 
-    /* diğer ürünler: gün satırı olan grid */
+    /* aktif öğünler (☀️ 🌤️ 🌙 — her biri ayrı aç/kapa) */
+    const savedMeals = remoteState.meals && remoteState.meals[prod.id];
+    const bakedMeals = bakedConfig.meals && bakedConfig.meals[prod.id];
+    let meals;
+    if (savedMeals !== undefined) meals = savedMeals;
+    else if (bakedMeals !== undefined) meals = bakedMeals;
+    else if (prod.everydayGroup) meals = everyOn ? ['aksam'] : ['sabah'];
+    else meals = prod.meals;
+    prod.currentMeals = new Set(meals);
+
     const grid = document.getElementById(prod.gridId);
-    const corner = grid.querySelector('.corner');
-    if (corner) corner.textContent = cornerIconsFor(prod);
-
     DAYS.forEach((d, i) => {
       const el = document.createElement('div');
-      el.className = 'day-header' + (currentActive.has(i) ? ' active-day' : '');
+      el.className = 'day-header';
       el.textContent = d;
       el.dataset.dayIndex = i;
       el.addEventListener('click', () => {
-        if (currentActive.has(i)) currentActive.delete(i);
-        else currentActive.add(i);
-        el.classList.toggle('active-day');
+        if (isEveryDayProduct(prod)) return;
+        if (prod.currentActive.has(i)) prod.currentActive.delete(i);
+        else prod.currentActive.add(i);
+        syncGridUI(prod);
         renderSummary();
       });
       grid.appendChild(el);
     });
+    syncGridUI(prod);
   }
 
-  /* ── Bir ürün şu an "her gün" ürünü mü? ──
-     Sabit everyDay:true ürünlerde (Dr. Ümit Aktaş, Chelatex Çinko Bakır)
-     her zaman true. "everydayGroup" içindeki ürünlerde (Magnimore /
-     Chelatex Magnezyum) ise sadece o an grup içinde seçili olan true
-     döner; seçili olmayan artık normal haftalık ürün gibi davranır. */
-  function isEveryDayProduct(p) {
-    if (p.everydayGroup) {
-      const choice = loadEverydayChoice();
-      return choice[p.everydayGroup] === p.id;
-    }
-    return !!p.everyDay;
+  /* Izgaranın görünümünü (öğün simgeleri + gün vurguları) güncel veriden yeniden kurar */
+  function syncGridUI(prod) {
+    const grid = document.getElementById(prod.gridId);
+    if (!grid) return;
+    const corner = grid.querySelector('.corner');
+    corner.innerHTML = '';
+    MEAL_KEYS.forEach(m => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'meal-btn' + (prod.currentMeals.has(m) ? ' active' : '');
+      if (m === 'aksam') b.classList.add('moon');
+      b.textContent = MEAL_ICON_MAP[m];
+      b.addEventListener('click', () => {
+        if (prod.currentMeals.has(m)) prod.currentMeals.delete(m);
+        else prod.currentMeals.add(m);
+        b.classList.toggle('active', prod.currentMeals.has(m));
+        renderSummary();
+      });
+      corner.appendChild(b);
+    });
+    grid.classList.toggle('locked', isEveryDayProduct(prod));
+    grid.querySelectorAll('.day-header').forEach(h => {
+      h.classList.toggle('active-day', prod.currentActive.has(Number(h.dataset.dayIndex)));
+    });
   }
 
   /* ── Gösterilecek öğün ikonu ──
@@ -1167,10 +1184,8 @@
      seçili olmayıp haftalık tabloda Cmt/Paz'a eklenen ürün ise sabah
      (☀️) ikonu gösterir. Diğer ürünlerde ikon değişmez. */
   function effectiveMeals(p) {
-    if (p.everydayGroup) {
-      return isEveryDayProduct(p) ? ['aksam'] : ['sabah'];
-    }
-    return p.meals;
+    if (p.currentMeals) return MEAL_KEYS.filter(m => p.currentMeals.has(m));
+    return p.meals || [];
   }
 
   function cornerIconsFor(p) {
@@ -1190,12 +1205,32 @@
     return meals.map(mealIcon).join('');
   }
 
+  const ZINC_CAT = 'Çinko & Bakır';
+
+  /* Çinko & Bakır için ayrı mini haftalık tablo (sadece 'her gün' olmayanlar).
+     Hücreye dokununca o ürünün o günü açılıp kapanır. */
+  function renderZincMini() {
+    const box = document.getElementById('summary-zinc');
+    if (!box) return;
+    const list = products.filter(p => p.category === ZINC_CAT && !isEveryDayProduct(p) && isProductEnabled(p));
+    if (list.length === 0) { box.innerHTML = ''; return; }
+    const head = '<tr><th>Çinko &amp; Bakır</th>' + DAYS.map(d => `<th>${d}</th>`).join('') + '</tr>';
+    const rows = list.map(p => {
+      const ic = mealIcons(effectiveMeals(p)) || '●';
+      const cells = DAYS.map((_, i) => p.currentActive.has(i)
+        ? `<td class="zc on" data-pid="${p.id}" data-day="${i}"><span class="ic">${ic}</span></td>`
+        : `<td class="zc" data-pid="${p.id}" data-day="${i}">—</td>`).join('');
+      return `<tr><td class="zn">${p.shortName || p.summaryName}</td>${cells}</tr>`;
+    }).join('');
+    box.innerHTML = `<div class="summary-table-wrap zinc-mini"><table><thead>${head}</thead><tbody>${rows}</tbody></table></div>`;
+  }
+
   function renderSummary() {
     const tableCategories = []; // sadece haftalık değişen ürünü olan kategoriler tabloda sütun olur
     const allCategories = []; // şeritler için: tüm kategoriler, ilk görüldükleri sırada
     products.forEach(p => {
       if (!allCategories.includes(p.category)) allCategories.push(p.category);
-      if (!isEveryDayProduct(p) && isProductEnabled(p) && !tableCategories.includes(p.category)) tableCategories.push(p.category);
+      if (p.category !== ZINC_CAT && !isEveryDayProduct(p) && isProductEnabled(p) && !tableCategories.includes(p.category)) tableCategories.push(p.category);
     });
     const categories = tableCategories;
 
@@ -1222,6 +1257,8 @@
       return `<tr><td>${DAYS[dayIdx]}</td>${cells}</tr>`;
     }).join('');
 
+    renderZincMini();
+
     /* "Her Gün" şeritleri — kategoriye göre gruplanmış everyDay ürünler */
     const strips = document.getElementById('summary-strips');
     strips.innerHTML = allCategories.map(cat => {
@@ -1240,7 +1277,7 @@
         // Magnezyum-sabit grubundaki ürünlerde (Magnimore/Chelatex
         // Magnezyum) gün seçimi tamamen otomatik ve seçiliyken her
         // zaman aynı (7 gün) olduğundan, bu satır orada hiç gösterilmez.
-        if (p.category === 'Çinko & Bakır' && !isFullWeek) {
+        if (!isFullWeek) {
           const miniDays = DAYS.map((d, i) => `<span class="mini-day ${active.has(i) ? 'active' : ''}">${d}</span>`).join('');
           html += `<div class="mini-day-strip"><span class="mini-icon">${cornerIconsFor(p)}</span>${miniDays}</div>`;
         }
@@ -1270,6 +1307,21 @@
      "Kaydet" ile aynı şekilde kalıcı olur. Magnimore/Chelatex
      Magnezyum bu listede yer almaz çünkü onların günü tamamen
      otomatik (Her Gün Ürünü Yap seçimine bağlı). ─────────────────*/
+  function initZincMini() {
+    const box = document.getElementById('summary-zinc');
+    if (!box) return;
+    box.addEventListener('click', (e) => {
+      const td = e.target.closest('td.zc');
+      if (!td) return;
+      const p = products.find(pp => pp.id === td.dataset.pid);
+      if (!p) return;
+      const d = Number(td.dataset.day);
+      if (p.currentActive.has(d)) p.currentActive.delete(d); else p.currentActive.add(d);
+      syncGridUI(p);
+      renderSummary();
+    });
+  }
+
   function initDayEditor() {
     const backdrop = document.getElementById('day-editor-backdrop');
     const modal = document.getElementById('day-editor-modal');
@@ -1295,7 +1347,7 @@
     document.getElementById('day-editor-title').textContent = `${DAYS[dayIdx]} — ${cat}`;
 
     const eligible = products.filter(p =>
-      p.category === cat && !p.everydayGroup && !isEveryDayProduct(p) && isProductEnabled(p)
+      p.category === cat && !isEveryDayProduct(p) && isProductEnabled(p)
     );
 
     const list = document.getElementById('day-editor-list');
@@ -1316,11 +1368,7 @@
           if (cb.checked) p.currentActive.add(dayIdx); else p.currentActive.delete(dayIdx);
 
           // ürünün kendi kartındaki gün butonuyla senkronize et
-          const grid = document.getElementById(p.gridId);
-          if (grid) {
-            const hdr = grid.querySelector(`.day-header[data-day-index="${dayIdx}"]`);
-            if (hdr) hdr.classList.toggle('active-day', cb.checked);
-          }
+          syncGridUI(p);
           renderSummary();
         });
       });
@@ -1371,9 +1419,12 @@
     products.forEach(p => {
       if (p.currentActive) all[p.id] = Array.from(p.currentActive).sort((a, b) => a - b);
     });
-    const choice = Object.assign({}, loadEverydayChoice());
+    const everyAll = {};
+    products.forEach(p => { everyAll[p.id] = isEveryDayProduct(p); });
     const enabled = Object.assign({}, loadEnabledState());
-    remoteState = { activeDays: all, everydayChoice: choice, enabled: enabled };
+    const mealsAll = {};
+    products.forEach(p => { if (p.currentMeals) mealsAll[p.id] = Array.from(p.currentMeals); });
+    remoteState = { activeDays: all, everyday: everyAll, prevDays: Object.assign({}, loadPrevDays()), enabled: enabled, meals: mealsAll };
     saveLocalCache(remoteState);
     try {
       await saveRemoteState();
@@ -1394,12 +1445,11 @@
   window.saveAllActiveDays = saveAllActiveDays;
   window.appReady = loadRemoteState().then(async () => {
     const allActiveDays = loadActiveDays();
-    const everydayChoice = await resolveEverydayChoices();
     products.forEach(p => buildGrid(p, allActiveDays));
-    initEverydaySelectors();
-    applyEverydayButtonStates(everydayChoice);
+    initEverydayButtons();
     initEnableToggles();
     initDayEditor();
+    initZincMini();
   });
 </script>
 <style>
@@ -1513,6 +1563,14 @@
     flex-shrink:0;
     margin-top:2px;
   }
+  .zinc-mini{ margin-top:16px; }
+  .zinc-mini table{ table-layout:fixed; }
+  .zinc-mini thead th{ font-size:.55rem; padding:8px 1px; letter-spacing:.03em; }
+  .zinc-mini thead th:first-child{ width:27%; padding-left:10px; font-size:.58rem; line-height:1.2; }
+  .zinc-mini tbody td{ padding:9px 1px; font-size:.6rem; color:#4a5570; cursor:pointer; }
+  .zinc-mini tbody td.zn{ text-align:left; padding-left:10px; font-weight:700; font-size:.66rem; color:#cfe0ff; background:#0d1220; cursor:default; line-height:1.2; }
+  .zinc-mini td.zc.on{ background:rgba(66,165,245,0.12); }
+  .zinc-mini td.zc .ic{ font-size:.55rem; letter-spacing:-1px; white-space:nowrap; }
   .summary-legend{
     display:flex;
     justify-content:center;
@@ -1544,6 +1602,8 @@
       <tbody id="summary-body"></tbody>
     </table>
   </div>
+
+  <div id="summary-zinc"></div>
 
   <div id="summary-strips"></div>
 
