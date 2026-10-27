@@ -1539,7 +1539,13 @@
   }
   window.addEventListener('online', trySyncAndNotify);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') trySyncAndNotify(); });
-  window.appReady = loadRemoteState().then(async () => {
+  /* Sayfanın tamamı (özet tablosu dahil) yüklenmeden başlatma: yerel kayıtla açılışta
+     veri anında geldiği için eskiden özet bölümü henüz oluşmadan çalışıp hata veriyordu. */
+  const domReady = new Promise(res => {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', res);
+    else res();
+  });
+  window.appReady = Promise.all([loadRemoteState(), domReady]).then(async () => {
     updateSourceLabel();
     const allActiveDays = loadActiveDays();
     products.forEach(p => buildGrid(p, allActiveDays));
